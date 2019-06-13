@@ -1,0 +1,99 @@
+<head>
+  <title>Half your age plus seven: calculator</title>
+
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script> -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css">
+  <script src="https://momentjs.com/downloads/moment.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pikaday/pikaday.js"></script>
+</head>
+
+<body>
+  <h1>Half your age plus seven</h1>
+  <h2>Calculator</h2>
+  <p>Enter the birthdates of two people. The calculator will tell you
+    on which date those people met the "half your age plus seven years" rule
+    popularized by <a href="https://xkcd.com/314/">xkcd</a>.</p>
+
+  <p>
+    <label for="datepickerA">A:</label>
+    <input type="text" id="datepickerA" onchange="calculate()">
+
+    <label for="datepickerB">B:</label>
+    <input type="text" id="datepickerB" onchange="calculate()">
+  </p>
+
+  <p>
+    <label for="gap">Age difference:</label>
+    <input type="text" id="gap">
+  </p>
+
+  <p>
+    <label for="magic_date">Magic date:</label>
+    <input type="text" id="magic_date">
+  </p>
+
+  <script>
+    var pickerA = new Pikaday(
+    {
+        field: document.getElementById('datepickerA'),
+        firstDay: 0,
+        minDate: new Date(1900,01,01),
+        maxDate: new Date(2200,12,31),
+        format: 'YYYY-MM-DD',
+        yearRange: [1900,2200]
+    });
+    var pickerB = new Pikaday(
+    {
+        field: document.getElementById('datepickerB'),
+        firstDay: 0,
+        minDate: new Date(1900,01,01),
+        maxDate: new Date(2200,12,31),
+        format: 'YYYY-MM-DD',
+        yearRange: [1900,2200]
+    });
+
+    function calculate() {
+      var dateA = moment(document.getElementById('datepickerA').value);
+      var dateB = moment(document.getElementById('datepickerB').value);
+      var older_date;
+      var younger_date;
+      if (dateA.diff(dateB, 'days') > 0) {
+        younger_date = dateA;
+        older_date = dateB;
+      }
+      else {
+        older_date = dateA;
+        younger_date = dateB;
+      }
+
+      // Show difference in years, months, days
+      var years = younger_date.diff(older_date, 'year');
+      var older_plus_years = older_date.clone().add(years, 'years');
+      var months = younger_date.diff(older_plus_years, 'months');
+      var older_plus_years_and_months = older_date.clone().add(years, 'years').add(months, 'months');
+      var days = younger_date.diff(older_plus_years_and_months, 'days');
+      var gap_text = '';
+      if (years > 0) {
+        gap_text += years + ' years';
+      }
+      if (months > 0) {
+        if (gap_text.length > 0) {
+          gap_text += ', ';
+        }
+        gap_text += months + ' months';
+      }
+      if (days > 0) {
+        if (gap_text.length > 0) {
+          gap_text += ', ';
+        }
+        gap_text += days + ' days';
+      }
+      document.getElementById('gap').value = gap_text;
+
+      // Calculate and show magic date
+      var gap_in_days = younger_date.diff(older_date, 'days');
+      var magic_date = younger_date.clone().add(gap_in_days, 'days').add(5114, 'days');
+      document.getElementById('magic_date').value = magic_date.format('YYYY-MM-DD');
+    }
+  </script>
+</body>
